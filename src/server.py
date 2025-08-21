@@ -9,6 +9,8 @@ Environment Variables:
 - ALLOW_NON_ROS2   : If set to "true", allows executing non-ros2 commands (default: "false")
 - DEFAULT_CWD      : Optional default working directory for command execution
 - MCP_TRANSPORT    : Transport for MCP server: "stdio" (default) or "streamable-http".
+- MCP_HOST         : Host interface for HTTP transport (default: "0.0.0.0")
+- MCP_PORT         : Port for HTTP transport (default: "8080")
 
 Example:
 uvx takanarishimbo-ros2-exec-mcp
@@ -21,6 +23,8 @@ ROS2_EXEC_TIMEOUT=60 uvx takanarishimbo-ros2-exec-mcp
 - ALLOW_NON_ROS2   : "true" の場合、ros2 以外のコマンドも許可（デフォルト: "false"）
 - DEFAULT_CWD      : コマンド実行時のデフォルト作業ディレクトリ（任意）
 - MCP_TRANSPORT    : MCP サーバーのトランスポート。"stdio"（デフォルト）または "streamable-http"。
+- MCP_HOST         : HTTP トランスポートのホスト（デフォルト: "0.0.0.0"）
+- MCP_PORT         : HTTP トランスポートのポート（デフォルト: "8080"）
 
 例:
 uvx takanarishimbo-ros2-exec-mcp
@@ -47,6 +51,8 @@ ROS2_EXEC_TIMEOUT = int(os.environ.get("ROS2_EXEC_TIMEOUT", "30"))
 ALLOW_NON_ROS2 = os.environ.get("ALLOW_NON_ROS2", "false").lower() == "true"
 DEFAULT_CWD = os.environ.get("DEFAULT_CWD")
 _RAW_TRANSPORT = os.environ.get("MCP_TRANSPORT", "stdio").strip().lower()
+MCP_HOST = os.environ.get("MCP_HOST", "0.0.0.0")
+_RAW_PORT = os.environ.get("MCP_PORT", "8000")
 
 
 def _resolve_transport(value: str) -> str:
@@ -65,13 +71,17 @@ def _resolve_transport(value: str) -> str:
 
 
 MCP_TRANSPORT = _resolve_transport(_RAW_TRANSPORT)
+try:
+    MCP_PORT = int(_RAW_PORT)
+except (TypeError, ValueError):
+    MCP_PORT = 8000
 
 """
 2. Server Initialization / サーバー初期化
 """
 
 
-mcp = FastMCP("ros2-exec-mcp")
+mcp = FastMCP("ros2-exec-mcp", host=MCP_HOST, port=MCP_PORT)
 
 
 """
@@ -176,4 +186,6 @@ def main() -> None:
     if DEFAULT_CWD:
         print(f"Default cwd: {DEFAULT_CWD}")
     print(f"Transport: {MCP_TRANSPORT} (from MCP_TRANSPORT='{_RAW_TRANSPORT}')")
+    print(f"HTTP host: {MCP_HOST} (from MCP_HOST='{_RAW_HOST}')")
+    print(f"HTTP port: {MCP_PORT} (from MCP_PORT='{_RAW_PORT}')")
     mcp.run(transport=MCP_TRANSPORT)

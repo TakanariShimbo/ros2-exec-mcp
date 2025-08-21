@@ -54,7 +54,9 @@ MCP クライアント設定例：
 事前にロボット側で MCP サーバーを起動：
 
 ```bash
-MCP_TRANSPORT=streamable-http uv run takanarishimbo-ros2-exec-mcp
+# 必要に応じてホスト/ポートを指定可能
+MCP_TRANSPORT=streamable-http MCP_HOST=0.0.0.0 MCP_PORT=8000 \
+  uvx takanarishimbo-ros2-exec-mcp
 ```
 
 MCP クライアント設定例：
@@ -63,7 +65,7 @@ MCP クライアント設定例：
 {
   "mcpServers": {
     "ros2": {
-      "url": "http://xxx.xxx.xxx.xxx:8000",
+      "url": "http://xxx.xxx.xxx.xxx:8000/mcp",
       "env": {
         "MCP_TRANSPORT": "streamable-http"
       }
@@ -78,6 +80,8 @@ MCP クライアント設定例：
 - `DEFAULT_CWD`: コマンド実行時のデフォルト作業ディレクトリ（任意）
 - `ALLOW_NON_ROS2`: `true` で `ros2` 以外のコマンドも許可（デフォルト：`false`）
 - `MCP_TRANSPORT`: トランスポート種別。`stdio`（デフォルト）または `streamable-http`
+- `MCP_HOST`: `streamable-http` 用の HTTP ホスト/インターフェース（デフォルト：`0.0.0.0`）
+- `MCP_PORT`: `streamable-http` 用の HTTP ポート（デフォルト：`8080`）
 
 ## 利用可能なツール
 

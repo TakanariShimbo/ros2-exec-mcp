@@ -54,7 +54,9 @@ You can also configure timeout, default working directory, or allow non-ros2 com
 Start the MCP server on the robot side first:
 
 ```bash
-MCP_TRANSPORT=streamable-http uv run takanarishimbo-ros2-exec-mcp
+# Optional: set host/port if needed
+MCP_TRANSPORT=streamable-http MCP_HOST=0.0.0.0 MCP_PORT=8000 \
+  uvx takanarishimbo-ros2-exec-mcp
 ```
 
 MCP client example:
@@ -63,7 +65,7 @@ MCP client example:
 {
   "mcpServers": {
     "ros2": {
-      "url": "http://xxx.xxx.xxx.xxx:8000",
+      "url": "http://xxx.xxx.xxx.xxx:8000/mcp",
       "env": {
         "MCP_TRANSPORT": "streamable-http"
       }
@@ -78,6 +80,8 @@ MCP client example:
 - `DEFAULT_CWD`: Default working directory for command execution (optional)
 - `ALLOW_NON_ROS2`: If set to `true`, allows executing non-`ros2` commands (default: `false`)
 - `MCP_TRANSPORT`: Transport mode. `stdio` (default) or `streamable-http`
+- `MCP_HOST`: HTTP host/interface for `streamable-http` (default: `0.0.0.0`)
+- `MCP_PORT`: HTTP port for `streamable-http` (default: `8080`)
 
 ## Available Tools
 
