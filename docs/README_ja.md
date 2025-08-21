@@ -89,7 +89,109 @@ ROS 2 CLI コマンドを実行します。
 
 ## PyPI への公開
 
-このプロジェクトは GitHub Actions による PyPI Trusted Publishers に対応しています。参照リポジトリの手順に従い、名称を `ros2-exec-mcp` / `takanarishimbo-ros2-exec-mcp` に置き換えてください。
+このプロジェクトは PyPI の Trusted Publishers 機能を使用して、GitHub Actions からトークンなしで安全に公開します。
+
+### 1. PyPI Trusted Publisher の設定
+
+1. **PyPI にログイン**（必要に応じてアカウントを作成）
+
+   - https://pypi.org/ にアクセス
+
+2. **公開設定に移動**
+
+   - アカウント設定に移動
+   - 「Publishing」をクリックまたは https://pypi.org/manage/account/publishing/ にアクセス
+
+3. **GitHub Publisher を追加**
+   - 「Add a new publisher」をクリック
+   - 「GitHub」を選択
+   - 以下を入力：
+     - **Owner**: `TakanariShimbo`（あなたの GitHub ユーザー名/組織）
+     - **Repository**: `ros2-exec-mcp`
+     - **Workflow name**: `pypi-publish.yml`
+     - **Environment**: `pypi`（オプションですが推奨）
+   - 「Add」をクリック
+
+### 2. GitHub 環境の設定（推奨）
+
+1. **リポジトリ設定に移動**
+
+   - GitHub リポジトリに移動
+   - 「Settings」→「Environments」をクリック
+
+2. **PyPI 環境を作成**
+   - 「New environment」をクリック
+   - Name: `pypi`
+   - 保護ルールの設定（オプション）：
+     - 必要なレビュアーを追加
+     - 特定のブランチ/タグに制限
+
+### 3. GitHub パーソナルアクセストークンの設定（リリーススクリプト用）
+
+リリーススクリプトは GitHub にプッシュする必要があるため、GitHub トークンが必要です：
+
+1. **GitHub パーソナルアクセストークンの作成**
+
+   - https://github.com/settings/tokens にアクセス
+   - 「Generate new token」→「Generate new token (classic)」をクリック
+   - 有効期限を設定（推奨：90 日またはカスタム）
+   - スコープを選択：
+     - ✅ `repo`（プライベートリポジトリのフルコントロール）
+   - 「Generate token」をクリック
+   - 生成されたトークンをコピー（`ghp_`で始まる）
+
+2. **Git にトークンを設定**
+
+   ```bash
+   # オプション1：GitHub CLIを使用（推奨）
+   gh auth login
+
+   # オプション2：gitを設定してトークンを使用
+   git config --global credential.helper store
+   # パスワードを求められたら、代わりにトークンを使用
+   ```
+
+### 4. 新しいバージョンのリリース
+
+リリーススクリプトを使用して、自動的にバージョン管理、タグ付け、公開をトリガー：
+
+```bash
+# 初回セットアップ
+chmod +x scripts/release.sh
+
+# パッチバージョンを増分（0.1.0 → 0.1.1）
+./scripts/release.sh patch
+
+# マイナーバージョンを増分（0.1.0 → 0.2.0）
+./scripts/release.sh minor
+
+# メジャーバージョンを増分（0.1.0 → 1.0.0）
+./scripts/release.sh major
+
+# 特定のバージョンを設定
+./scripts/release.sh 1.2.3
+```
+
+### 5. 公開の確認
+
+1. **GitHub Actions を確認**
+
+   - リポジトリの「Actions」タブに移動
+   - 「Publish to PyPI」ワークフローが正常に完了したことを確認
+
+2. **PyPI パッケージを確認**
+   - 訪問：https://pypi.org/project/takanarishimbo-ros2-exec-mcp/
+   - または実行：`pip show takanarishimbo-ros2-exec-mcp`
+
+### リリースプロセスフロー
+
+1. `release.sh`スクリプトがすべてのファイルのバージョンを更新
+2. git コミットとタグを作成
+3. GitHub にプッシュ
+4. 新しいタグで GitHub Actions ワークフローがトリガー
+5. ワークフローが OIDC を使用して PyPI に認証（トークン不要！）
+6. ワークフローがプロジェクトをビルドして PyPI に公開
+7. パッケージが`pip install`や`uvx`でグローバルに利用可能になる
 
 ## コード品質
 

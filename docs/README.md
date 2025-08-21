@@ -89,7 +89,109 @@ Returns combined stdout/stderr and exit code.
 
 ## Publishing to PyPI
 
-This project is set up for PyPI Trusted Publishers via GitHub Actions. See the reference repository’s guide; replace names with `ros2-exec-mcp` and `takanarishimbo-ros2-exec-mcp`.
+This project uses PyPI's Trusted Publishers feature for secure, token-less publishing via GitHub Actions.
+
+### 1. Configure PyPI Trusted Publisher
+
+1. **Log in to PyPI** (create account if needed)
+
+   - Go to https://pypi.org/
+
+2. **Navigate to Publishing Settings**
+
+   - Go to your account settings
+   - Click on "Publishing" or go to https://pypi.org/manage/account/publishing/
+
+3. **Add GitHub Publisher**
+   - Click "Add a new publisher"
+   - Select "GitHub" as the publisher
+   - Fill in:
+     - **Owner**: `TakanariShimbo` (your GitHub username/org)
+     - **Repository**: `ros2-exec-mcp`
+     - **Workflow name**: `pypi-publish.yml`
+     - **Environment**: `pypi` (optional but recommended)
+   - Click "Add"
+
+### 2. Configure GitHub Environment (Recommended)
+
+1. **Navigate to Repository Settings**
+
+   - Go to your GitHub repository
+   - Click "Settings" → "Environments"
+
+2. **Create PyPI Environment**
+   - Click "New environment"
+   - Name: `pypi`
+   - Configure protection rules (optional):
+     - Add required reviewers
+     - Restrict to specific branches/tags
+
+### 3. Setup GitHub Personal Access Token (for release script)
+
+The release script needs to push to GitHub, so you'll need a GitHub token:
+
+1. **Create GitHub Personal Access Token**
+
+   - Go to https://github.com/settings/tokens
+   - Click "Generate new token" → "Generate new token (classic)"
+   - Set expiration (recommended: 90 days or custom)
+   - Select scopes:
+     - ✅ `repo` (Full control of private repositories)
+   - Click "Generate token"
+   - Copy the generated token (starts with `ghp_`)
+
+2. **Configure Git with Token**
+
+   ```bash
+   # Option 1: Use GitHub CLI (recommended)
+   gh auth login
+
+   # Option 2: Configure git to use token
+   git config --global credential.helper store
+   # Then when prompted for password, use your token instead
+   ```
+
+### 4. Release New Version
+
+Use the release script to automatically version, tag, and trigger publishing:
+
+```bash
+# First time setup
+chmod +x scripts/release.sh
+
+# Increment patch version (0.1.0 → 0.1.1)
+./scripts/release.sh patch
+
+# Increment minor version (0.1.0 → 0.2.0)
+./scripts/release.sh minor
+
+# Increment major version (0.1.0 → 1.0.0)
+./scripts/release.sh major
+
+# Set specific version
+./scripts/release.sh 1.2.3
+```
+
+### 5. Verify Publication
+
+1. **Check GitHub Actions**
+
+   - Go to "Actions" tab in your repository
+   - Verify the "Publish to PyPI" workflow completed successfully
+
+2. **Verify PyPI Package**
+   - Visit: https://pypi.org/project/takanarishimbo-ros2-exec-mcp/
+   - Or run: `pip show takanarishimbo-ros2-exec-mcp`
+
+### Release Process Flow
+
+1. `release.sh` script updates version in all files
+2. Creates git commit and tag
+3. Pushes to GitHub
+4. GitHub Actions workflow triggers on new tag
+5. Workflow uses OIDC to authenticate with PyPI (no tokens needed!)
+6. Workflow builds project and publishes to PyPI
+7. Package becomes available globally via `pip install` or `uvx`
 
 ## Code Quality
 
