@@ -10,7 +10,6 @@ A Model Context Protocol (MCP) server that executes ROS 2 (`ros2`) CLI commands 
 - Configurable default timeout via environment variable
 - Optional working directory control
 - Secure by default: only allows commands starting with `ros2` (overridable)
-- Single tool: `ros2_exec`
 
 ## Usage
 
@@ -62,7 +61,7 @@ Execute a ROS 2 CLI command.
 
 Parameters:
 
-- `args` (required): Array of arguments, e.g., `["topic", "list"]` runs `ros2 topic list`
+- `command` (required): Full command string, e.g., `"ros2 topic list"`
 - `timeout` (optional): Timeout seconds (overrides `ROS2_EXEC_TIMEOUT`)
 - `cwd` (optional): Working directory (overrides `DEFAULT_CWD`)
 

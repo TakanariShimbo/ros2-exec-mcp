@@ -10,7 +10,6 @@ stdio を通じて ROS 2（`ros2`）CLI コマンドを実行する Model Contex
 - 環境変数でデフォルトのタイムアウトを設定
 - 作業ディレクトリの指定（任意）
 - 既定で安全：`ros2` で始まるコマンドのみ許可（無効化可）
-- 提供ツール：`ros2_exec`
 
 ## 使用方法
 
@@ -62,7 +61,7 @@ ROS 2 CLI コマンドを実行します。
 
 引数:
 
-- `args`（必須）：引数配列。例：`["topic", "list"]` → `ros2 topic list` を実行
+- `command`（必須）：コマンド全文の文字列。例：`"ros2 topic list"`
 - `timeout`（任意）：タイムアウト秒（`ROS2_EXEC_TIMEOUT` を上書き）
 - `cwd`（任意）：作業ディレクトリ（`DEFAULT_CWD` を上書き）
 
