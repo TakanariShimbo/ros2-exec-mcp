@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "takanarishimbo-ros2-exec-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "An MCP server that executes ROS 2 (ros2) CLI commands"
 readme = "docs/README.md"
 license = {text = "MIT"}
