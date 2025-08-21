@@ -2,7 +2,7 @@
 
 # ROS2 Exec MCP Server
 
-A Model Context Protocol (MCP) server that executes ROS 2 (`ros2`) CLI commands via stdio. This follows the same structure and coding rules as the reference uvx datetime MCP server, but provides a single tool to run `ros2` commands.
+A Model Context Protocol (MCP) server that executes ROS 2 (`ros2`) CLI commands.
 
 ## Features
 
@@ -13,23 +13,24 @@ A Model Context Protocol (MCP) server that executes ROS 2 (`ros2`) CLI commands 
 
 ## Usage
 
-Configure your MCP client to launch this server with `uvx`:
+Below are examples for both stdio and streamable-http.
+
+### Stdio (default)
+
+MCP client example:
 
 ```json
 {
   "mcpServers": {
     "ros2": {
       "command": "uvx",
-      "args": ["takanarishimbo-ros2-exec-mcp"],
-      "env": {
-        "ROS2_EXEC_TIMEOUT": "30"
-      }
+      "args": ["takanarishimbo-ros2-exec-mcp"]
     }
   }
 }
 ```
 
-You can also set a default working directory or allow non-ros2 commands:
+You can also configure timeout, default working directory, or allow non-ros2 commands:
 
 ```json
 {
@@ -40,7 +41,31 @@ You can also set a default working directory or allow non-ros2 commands:
       "env": {
         "ROS2_EXEC_TIMEOUT": "60",
         "DEFAULT_CWD": "/your/ros2/ws",
-        "ALLOW_NON_ROS2": "false"
+        "ALLOW_NON_ROS2": "true",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+### streamable-http
+
+Start the MCP server on the robot side first:
+
+```bash
+MCP_TRANSPORT=streamable-http uv run takanarishimbo-ros2-exec-mcp
+```
+
+MCP client example:
+
+```json
+{
+  "mcpServers": {
+    "ros2": {
+      "url": "http://xxx.xxx.xxx.xxx:8000",
+      "env": {
+        "MCP_TRANSPORT": "streamable-http"
       }
     }
   }
@@ -52,6 +77,7 @@ You can also set a default working directory or allow non-ros2 commands:
 - `ROS2_EXEC_TIMEOUT`: Default timeout seconds for command execution (default: `30`)
 - `DEFAULT_CWD`: Default working directory for command execution (optional)
 - `ALLOW_NON_ROS2`: If set to `true`, allows executing non-`ros2` commands (default: `false`)
+- `MCP_TRANSPORT`: Transport mode. `stdio` (default) or `streamable-http`
 
 ## Available Tools
 

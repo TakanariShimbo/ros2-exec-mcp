@@ -8,6 +8,7 @@ Environment Variables:
 - ROS2_EXEC_TIMEOUT: Default timeout seconds for command execution (default: "30")
 - ALLOW_NON_ROS2   : If set to "true", allows executing non-ros2 commands (default: "false")
 - DEFAULT_CWD      : Optional default working directory for command execution
+- MCP_TRANSPORT    : Transport for MCP server: "stdio" (default) or "streamable-http".
 
 Example:
 uvx takanarishimbo-ros2-exec-mcp
@@ -19,6 +20,7 @@ ROS2_EXEC_TIMEOUT=60 uvx takanarishimbo-ros2-exec-mcp
 - ROS2_EXEC_TIMEOUT: コマンド実行のデフォルトタイムアウト秒（デフォルト: "30"）
 - ALLOW_NON_ROS2   : "true" の場合、ros2 以外のコマンドも許可（デフォルト: "false"）
 - DEFAULT_CWD      : コマンド実行時のデフォルト作業ディレクトリ（任意）
+- MCP_TRANSPORT    : MCP サーバーのトランスポート。"stdio"（デフォルト）または "streamable-http"。
 
 例:
 uvx takanarishimbo-ros2-exec-mcp
@@ -44,6 +46,25 @@ from mcp.server.fastmcp import FastMCP
 ROS2_EXEC_TIMEOUT = int(os.environ.get("ROS2_EXEC_TIMEOUT", "30"))
 ALLOW_NON_ROS2 = os.environ.get("ALLOW_NON_ROS2", "false").lower() == "true"
 DEFAULT_CWD = os.environ.get("DEFAULT_CWD")
+_RAW_TRANSPORT = os.environ.get("MCP_TRANSPORT", "stdio").strip().lower()
+
+
+def _resolve_transport(value: str) -> str:
+    # Map human-friendly values to FastMCP transport values
+    # - "stdio" -> "stdio"
+    # - "html"  -> "streamable-http" (serves minimal HTML UI)
+    # - expose "streamable-http" for advanced users as-is
+    v = value.strip().lower()
+    if v in (
+        "stdio",
+        "streamable-http",
+    ):
+        return v
+    # Fallback to stdio on unknown value
+    return "stdio"
+
+
+MCP_TRANSPORT = _resolve_transport(_RAW_TRANSPORT)
 
 """
 2. Server Initialization / サーバー初期化
@@ -154,4 +175,5 @@ def main() -> None:
     print(f"Allow non-ros2: {ALLOW_NON_ROS2}")
     if DEFAULT_CWD:
         print(f"Default cwd: {DEFAULT_CWD}")
-    mcp.run(transport="streamable-http")
+    print(f"Transport: {MCP_TRANSPORT} (from MCP_TRANSPORT='{_RAW_TRANSPORT}')")
+    mcp.run(transport=MCP_TRANSPORT)

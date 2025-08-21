@@ -2,7 +2,7 @@
 
 # ROS2 Exec MCP サーバー
 
-stdio を通じて ROS 2（`ros2`）CLI コマンドを実行する Model Context Protocol (MCP) サーバーです。参照の uvx datetime MCP サーバーと同じ構成・コーディングルールに従い、`ros2` コマンド実行のツールを 1 つだけ提供します。
+ROS 2（`ros2`）CLI コマンドを実行する Model Context Protocol (MCP) サーバーです。
 
 ## 機能
 
@@ -13,23 +13,24 @@ stdio を通じて ROS 2（`ros2`）CLI コマンドを実行する Model Contex
 
 ## 使用方法
 
-MCP クライアントで `uvx` を用いてこのサーバーを起動します：
+以下は stdio と streamable-http の両方の例です。
+
+### Stdio（デフォルト）
+
+MCP クライアント設定例：
 
 ```json
 {
   "mcpServers": {
     "ros2": {
       "command": "uvx",
-      "args": ["takanarishimbo-ros2-exec-mcp"],
-      "env": {
-        "ROS2_EXEC_TIMEOUT": "30"
-      }
+      "args": ["takanarishimbo-ros2-exec-mcp"]
     }
   }
 }
 ```
 
-既定の作業ディレクトリや非 `ros2` コマンドの許可を設定することもできます：
+タイムアウトや既定の作業ディレクトリ、非 `ros2` コマンドの許可を設定することもできます：
 
 ```json
 {
@@ -40,7 +41,31 @@ MCP クライアントで `uvx` を用いてこのサーバーを起動します
       "env": {
         "ROS2_EXEC_TIMEOUT": "60",
         "DEFAULT_CWD": "/your/ros2/ws",
-        "ALLOW_NON_ROS2": "false"
+        "ALLOW_NON_ROS2": "true",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+### streamable-http
+
+事前にロボット側で MCP サーバーを起動：
+
+```bash
+MCP_TRANSPORT=streamable-http uv run takanarishimbo-ros2-exec-mcp
+```
+
+MCP クライアント設定例：
+
+```json
+{
+  "mcpServers": {
+    "ros2": {
+      "url": "http://xxx.xxx.xxx.xxx:8000",
+      "env": {
+        "MCP_TRANSPORT": "streamable-http"
       }
     }
   }
@@ -52,6 +77,7 @@ MCP クライアントで `uvx` を用いてこのサーバーを起動します
 - `ROS2_EXEC_TIMEOUT`: コマンド実行のデフォルトタイムアウト秒（デフォルト：`30`）
 - `DEFAULT_CWD`: コマンド実行時のデフォルト作業ディレクトリ（任意）
 - `ALLOW_NON_ROS2`: `true` で `ros2` 以外のコマンドも許可（デフォルト：`false`）
+- `MCP_TRANSPORT`: トランスポート種別。`stdio`（デフォルト）または `streamable-http`
 
 ## 利用可能なツール
 
