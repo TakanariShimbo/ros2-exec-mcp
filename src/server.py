@@ -2,7 +2,7 @@
 """
 0. ROS2 Exec MCP Server
 
-This server exposes a single tool to execute ROS 2 (ros2) CLI commands via stdio transport.
+This MCP server exposes a single tool to execute ROS 2 (ros2) CLI commands.
 
 Environment Variables:
 - ROS2_EXEC_TIMEOUT: Default timeout seconds for command execution (default: "30")
@@ -15,7 +15,7 @@ ROS2_EXEC_TIMEOUT=60 uvx takanarishimbo-ros2-exec-mcp
 
 0. ROS2 実行 MCP サーバー
 
-このサーバーは、1つのツールで ROS 2 (ros2) CLI コマンドを stdio 経由で実行します。
+このMCPサーバーは、1つのツールで ROS 2 (ros2) CLI コマンドを実行します。
 
 環境変数:
 - ROS2_EXEC_TIMEOUT: コマンド実行のデフォルトタイムアウト秒（デフォルト: "30"）
@@ -37,9 +37,12 @@ from typing import Annotated, Optional
 from pydantic import Field
 from mcp.server.fastmcp import FastMCP
 
+
 """
 1. Environment Configuration / 環境設定
 """
+
+
 ROS2_EXEC_TIMEOUT = int(os.environ.get("ROS2_EXEC_TIMEOUT", "30"))
 ALLOW_NON_ROS2 = os.environ.get("ALLOW_NON_ROS2", "false").lower() == "true"
 DEFAULT_CWD = os.environ.get("DEFAULT_CWD")
@@ -47,6 +50,8 @@ DEFAULT_CWD = os.environ.get("DEFAULT_CWD")
 """
 2. Server Initialization / サーバー初期化
 """
+
+
 mcp = FastMCP("ros2-exec-mcp")
 
 
@@ -137,7 +142,7 @@ def ros2_exec(
 
 
 def main() -> None:
-    print("ROS2 Exec MCP Server running on stdio")
+    print("ROS2 Exec MCP Server running")
     print(f"Default timeout: {ROS2_EXEC_TIMEOUT}s")
     print(f"Allow non-ros2: {ALLOW_NON_ROS2}")
     if DEFAULT_CWD:
