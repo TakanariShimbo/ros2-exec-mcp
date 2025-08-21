@@ -186,6 +186,6 @@ def main() -> None:
     if DEFAULT_CWD:
         print(f"Default cwd: {DEFAULT_CWD}")
     print(f"Transport: {MCP_TRANSPORT} (from MCP_TRANSPORT='{_RAW_TRANSPORT}')")
-    print(f"HTTP host: {MCP_HOST} (from MCP_HOST='{_RAW_HOST}')")
+    print(f"HTTP host: {MCP_HOST}")
     print(f"HTTP port: {MCP_PORT} (from MCP_PORT='{_RAW_PORT}')")
     mcp.run(transport=MCP_TRANSPORT)
