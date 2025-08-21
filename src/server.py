@@ -154,4 +154,4 @@ def main() -> None:
     print(f"Allow non-ros2: {ALLOW_NON_ROS2}")
     if DEFAULT_CWD:
         print(f"Default cwd: {DEFAULT_CWD}")
-    mcp.run(transport="stdio")
+    mcp.run(transport="streamable-http")
